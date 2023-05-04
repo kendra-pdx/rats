@@ -1,5 +1,6 @@
 mod mt;
 
+mod hkt;
 mod functor;
 mod pure;
 mod applicative;

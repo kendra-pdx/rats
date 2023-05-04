@@ -1,11 +1,10 @@
 use crate::{
-    applicative::Applicative, functor::Functor, monad::Monad, pure::Pure, semigroup::Semigroup,
+    applicative::Applicative, functor::Functor, monad::Monad, pure::Pure, semigroup::Semigroup, hkt::derive_hkt,
 };
 
-impl<A> Functor for Vec<A> {
-    type Of = A;
-    type To<B> = Vec<B>;
+derive_hkt!(Vec);
 
+impl<A> Functor for Vec<A> {
     fn fmap<F, B>(self, f: F) -> Self::To<B>
     where
         F: FnMut(Self::Of) -> B,

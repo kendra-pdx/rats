@@ -1,9 +1,8 @@
-use crate::{applicative::Applicative, functor::Functor, monad::Monad, pure::Pure};
+use crate::{applicative::Applicative, functor::Functor, monad::Monad, pure::Pure, hkt::derive_hkt};
+
+derive_hkt!(Option);
 
 impl<A> Functor for Option<A> {
-    type Of = A;
-    type To<B> = Option<B>;
-
     fn fmap<F: FnMut(A) -> B, B>(self, mut f: F) -> Option<B> {
         match self {
             Some(x) => Some(f(x)),
