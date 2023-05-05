@@ -3,9 +3,9 @@ use crate::{applicative::Applicative, functor::Functor, monad::Monad, pure::Pure
 derive_hkt!(Option);
 
 impl<A> Functor for Option<A> {
-    fn fmap<F: FnMut(A) -> B, B>(self, mut f: F) -> Option<B> {
+    fn fmap<F: FnMut(&A) -> B, B>(self, mut f: F) -> Option<B> {
         match self {
-            Some(x) => Some(f(x)),
+            Some(x) => Some(f(&x)),
             None => None,
         }
     }
@@ -18,13 +18,13 @@ impl<A> Pure for Option<A> {
 }
 
 impl<A> Applicative for Option<A> {
-    fn lift_a2<F, B, C>(self, b: Self::To<B>, mut f: F) -> Self::To<C>
+    fn lift_a2<F, B, C>(self, b: Self::To<B>, f: F) -> Self::To<C>
     where
-        F: FnMut(Self::Of, B) -> C,
+        F: Fn(&Self::Of, B) -> C,
         Self::Of: Copy,
         A: Copy,
     {
-        self.as_ref().and_then(|a| b.map(move |b| f(*a, b)))
+        self.as_ref().and_then(|a| b.map(move |b| f(a, b)))
     }
 }
 
@@ -52,7 +52,7 @@ mod tests {
             Some(String::from("a")),
             Some(String::from("A")).fmap(|s| s.to_lowercase())
         );
-        assert_eq!(None, None.fmap(|s: String| s.to_lowercase()));
+        assert_eq!(None, None.fmap(|s: &String| s.to_lowercase()));
     }
 
     #[test]
@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn lift_a2_apply() {
-        let a = Some(|x: u32| x + 1);
+        let a = Some(|x: &u32| x + 1);
         let b = Some(2);
         assert_eq!(Some(3), a.ap(b))
     }

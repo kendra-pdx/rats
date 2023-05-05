@@ -7,9 +7,9 @@ derive_hkt!(Vec);
 impl<A> Functor for Vec<A> {
     fn fmap<F, B>(self, f: F) -> Self::To<B>
     where
-        F: FnMut(Self::Of) -> B,
+        F: Fn(&Self::Of) -> B,
     {
-        self.into_iter().map(f).collect()
+        self.iter().map(f).collect()
     }
 }
 
@@ -33,13 +33,13 @@ fn product<'a: 'c, 'b: 'c, 'c, A, B>(
 }
 
 impl<A> Applicative for Vec<A> {
-    fn lift_a2<F, B, C>(self, b: Self::To<B>, mut f: F) -> Self::To<C>
+    fn lift_a2<F, B, C>(self, b: Self::To<B>, f: F) -> Self::To<C>
     where
-        F: FnMut(Self::Of, B) -> C,
+        F: Fn(&Self::Of, B) -> C,
         Self::Of: Copy,
         B: Copy,
     {
-        product(&self, &b).map(|(a, b)| f(*a, *b)).collect()
+        product(&self, &b).map(|(a, b)| f(a, *b)).collect()
     }
 }
 
@@ -75,8 +75,8 @@ mod tests {
 
     #[test]
     fn ap() {
-        let plus1 = |x: i32| x + 1;
-        let plus2 = |x: i32| x + 2;
+        let plus1 = |x: &i32| x + 1;
+        let plus2 = |x: &i32| x + 2;
         let a = vec![plus1, plus2];
         let b = vec![1, 2];
         assert_eq!(vec![2, 3, 3, 4], a.ap(b))

@@ -3,5 +3,5 @@ use crate::hkt::HKT;
 pub trait Functor: HKT {
     fn fmap<F, B>(self, f: F) -> Self::To<B>
     where
-        F: FnMut(Self::Of) -> B;
+        F: Fn(&Self::Of) -> B;
 }
