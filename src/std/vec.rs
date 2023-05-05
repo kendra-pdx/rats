@@ -1,11 +1,12 @@
 use crate::{
-    applicative::Applicative, functor::Functor, monad::Monad, pure::Pure, semigroup::Semigroup, hkt::derive_hkt,
+    applicative::Applicative, functor::Functor, hkt::derive_hkt, monad::Monad, pure::Pure,
+    semigroup::Semigroup,
 };
 
 derive_hkt!(Vec);
 
 impl<A> Functor for Vec<A> {
-    fn fmap<F, B>(self, f: F) -> Self::To<B>
+    fn fmap<F, B>(&self, f: F) -> Self::To<B>
     where
         F: Fn(&Self::Of) -> B,
     {
@@ -25,30 +26,28 @@ impl<A> Pure for Vec<A> {
     }
 }
 
-fn product<'a: 'c, 'b: 'c, 'c, A, B>(
-    xs: &'a Vec<A>,
-    ys: &'b Vec<B>,
-) -> impl Iterator<Item = (&'a A, &'b B)> + 'c {
-    xs.iter().flat_map(move |x| std::iter::repeat(x).zip(ys))
-}
-
 impl<A> Applicative for Vec<A> {
-    fn lift_a2<F, B, C>(self, b: Self::To<B>, f: F) -> Self::To<C>
+    fn lift_a2<F, B, C>(&self, b: Self::To<B>, f: F) -> Self::To<C>
     where
-        F: Fn(&Self::Of, B) -> C,
-        Self::Of: Copy,
-        B: Copy,
+        F: Fn(&Self::Of, &B) -> C,
     {
-        product(&self, &b).map(|(a, b)| f(a, *b)).collect()
+        let mut result = Vec::new();
+        for a in self.iter() {
+            for b in b.iter() {
+                let r = f(a, b);
+                result.push(r)
+            }
+        }
+        result
     }
 }
 
 impl<A> Monad for Vec<A> {
-    fn bind<B, F>(self, f: F) -> Self::To<B>
+    fn bind<B, F>(&self, f: F) -> Self::To<B>
     where
-        F: Fn(Self::Of) -> Self::To<B>,
+        F: Fn(&Self::Of) -> Self::To<B>,
     {
-        self.into_iter().flat_map(f).collect()
+        self.into_iter().map(f).flatten().collect()
     }
 }
 
@@ -84,7 +83,7 @@ mod tests {
 
     #[test]
     fn bind() {
-        let plus = |x: i32| vec![x + 1, x + 2];
+        let plus = |x: &i32| vec![x + 1, x + 2];
         let xs = vec![1, 2];
         let r = vec![2, 3, 3, 4];
         assert_eq!(r, xs.bind(plus));
@@ -92,7 +91,7 @@ mod tests {
 
     #[test]
     fn bind_empty() {
-        let empty = |_: i32| vec![];
+        let empty = |_: &i32| vec![];
         let xs = vec![1, 2];
         let r: Vec<i32> = vec![];
         assert_eq!(r, xs.bind(empty));

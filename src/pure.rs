@@ -1,5 +1,5 @@
-use crate::functor::Functor;
+use crate::hkt::HKT;
 
-pub trait Pure: Functor {
+pub trait Pure: HKT {
     fn pure(t: Self::Of) -> Self::To<Self::Of>;
 }

@@ -1,4 +1,3 @@
-use crate::{semigroup::Semigroup};
+use crate::semigroup::Semigroup;
 
-pub trait Monoid: Semigroup + Default {
-}
+pub trait Monoid: Semigroup + Default {}

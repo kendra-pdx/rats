@@ -1,9 +1,11 @@
-use crate::{applicative::Applicative, functor::Functor, monad::Monad, pure::Pure, hkt::derive_hkt};
+use crate::{
+    applicative::Applicative, functor::Functor, hkt::derive_hkt, monad::Monad, pure::Pure,
+};
 
 derive_hkt!(Option);
 
 impl<A> Functor for Option<A> {
-    fn fmap<F: FnMut(&A) -> B, B>(self, mut f: F) -> Option<B> {
+    fn fmap<F: Fn(&A) -> B, B>(&self, f: F) -> Option<B> {
         match self {
             Some(x) => Some(f(&x)),
             None => None,
@@ -18,22 +20,23 @@ impl<A> Pure for Option<A> {
 }
 
 impl<A> Applicative for Option<A> {
-    fn lift_a2<F, B, C>(self, b: Self::To<B>, f: F) -> Self::To<C>
+    fn lift_a2<F, B, C>(&self, b: Self::To<B>, f: F) -> Self::To<C>
     where
-        F: Fn(&Self::Of, B) -> C,
-        Self::Of: Copy,
-        A: Copy,
+        F: Fn(&Self::Of, &B) -> C,
+        // Self::Of: Copy,
+        // A: Copy,
+        
     {
-        self.as_ref().and_then(|a| b.map(move |b| f(a, b)))
+        self.as_ref().and_then(|a| b.map(move |b| f(a, &b)))
     }
 }
 
 impl<A> Monad for Option<A> {
-    fn bind<B, F>(self, f: F) -> Self::To<B>
+    fn bind<B, F>(&self, f: F) -> Self::To<B>
     where
-        F: Fn(Self::Of) -> Self::To<B>,
+        F: Fn(&Self::Of) -> Self::To<B>,
     {
-        self.and_then(f)
+        self.as_ref().and_then(|a| f(&a))
     }
 }
 

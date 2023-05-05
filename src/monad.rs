@@ -1,7 +1,7 @@
-use crate::{applicative::Applicative};
+use crate::applicative::Applicative;
 
 pub trait Monad: Applicative {
-    fn bind<B, F>(self, f: F) -> Self::To<B>
+    fn bind<B, F>(&self, f: F) -> Self::To<B>
     where
-        F: Fn(Self::Of) -> Self::To<B>;
+        F: Fn(&Self::Of) -> Self::To<B>;
 }
