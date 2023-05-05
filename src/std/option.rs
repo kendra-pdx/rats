@@ -23,9 +23,6 @@ impl<A> Applicative for Option<A> {
     fn lift_a2<F, B, C>(&self, b: Self::To<B>, f: F) -> Self::To<C>
     where
         F: Fn(&Self::Of, &B) -> C,
-        // Self::Of: Copy,
-        // A: Copy,
-        
     {
         self.as_ref().and_then(|a| b.map(move |b| f(a, &b)))
     }
