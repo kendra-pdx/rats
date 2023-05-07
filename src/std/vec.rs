@@ -27,18 +27,16 @@ impl<A> Pure for Vec<A> {
 }
 
 impl<A> Applicative for Vec<A> {
-    fn lift_a2<F, B, C>(&self, b: Self::To<B>, f: F) -> Self::To<C>
+    fn lift_a2<F, B, C>(&self, b: &Self::To<B>, f: F) -> Self::To<C>
     where
         F: Fn(&Self::Of, &B) -> C,
     {
-        let mut result = Vec::new();
-        for a in self.iter() {
-            for b in b.iter() {
-                let r = f(a, b);
-                result.push(r)
-            }
-        }
-        result
+        self.iter()
+            .flat_map(move |a| b.iter().map(move |b| (a, b)))
+            .map(|ab| match ab {
+                (a, b) => f(&a, &b),
+            })
+            .collect()
     }
 }
 
@@ -78,7 +76,7 @@ mod tests {
         let plus2 = |x: &i32| x + 2;
         let a = vec![plus1, plus2];
         let b = vec![1, 2];
-        assert_eq!(vec![2, 3, 3, 4], a.ap(b))
+        assert_eq!(vec![2, 3, 3, 4], a.ap(&b))
     }
 
     #[test]

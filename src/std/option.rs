@@ -20,11 +20,11 @@ impl<A> Pure for Option<A> {
 }
 
 impl<A> Applicative for Option<A> {
-    fn lift_a2<F, B, C>(&self, b: Self::To<B>, f: F) -> Self::To<C>
+    fn lift_a2<F, B, C>(&self, b: &Self::To<B>, f: F) -> Self::To<C>
     where
         F: Fn(&Self::Of, &B) -> C,
     {
-        self.as_ref().and_then(|a| b.map(move |b| f(a, &b)))
+        self.as_ref().and_then(|a| b.as_ref().map(move |b| f(a, b)))
     }
 }
 
@@ -61,17 +61,17 @@ mod tests {
         let b: Option<u32> = Some(2);
         let c: Option<u32> = None;
 
-        assert_eq!(Some(3), a.lift_a2(b, |x, y| x + y));
-        assert_eq!(None, c.lift_a2(a, |x, y| x + y));
-        assert_eq!(None, a.lift_a2(c, |x, y| x + y));
-        assert_eq!(None, c.lift_a2(c, |x, y| x + y));
+        assert_eq!(Some(3), a.lift_a2(&b, |x, y| x + y));
+        assert_eq!(None, c.lift_a2(&a, |x, y| x + y));
+        assert_eq!(None, a.lift_a2(&c, |x, y| x + y));
+        assert_eq!(None, c.lift_a2(&c, |x, y| x + y));
     }
 
     #[test]
     fn lift_a2_apply() {
         let a = Some(|x: &u32| x + 1);
         let b = Some(2);
-        assert_eq!(Some(3), a.ap(b))
+        assert_eq!(Some(3), a.ap(&b))
     }
 
     #[test]

@@ -1,3 +1,6 @@
 use crate::semigroup::Semigroup;
 
-pub trait Monoid: Semigroup + Default {}
+pub trait Monoid {}
+
+impl<T: Default + Semigroup> Monoid for T {
+}

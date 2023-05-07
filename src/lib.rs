@@ -9,3 +9,4 @@ mod monoid;
 mod monad;
 
 mod std;
+mod validation;

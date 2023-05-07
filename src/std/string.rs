@@ -1,4 +1,4 @@
-use crate::{semigroup::Semigroup, monoid::Monoid};
+use crate::semigroup::Semigroup;
 
 impl Semigroup for String {
     fn combine(self, rhs: Self) -> Self {
@@ -6,8 +6,8 @@ impl Semigroup for String {
     }
 }
 
-impl Monoid for String {
-}
+// impl Monoid for String {
+// }
 
 #[cfg(test)]
 mod tests {
@@ -25,7 +25,9 @@ mod tests {
     fn monoid() {
         assert_eq!(
             String::from("ab"),
-            String::default().combine(String::from("a")).combine(String::from("b"))
+            String::default()
+                .combine(String::from("a"))
+                .combine(String::from("b"))
         )
     }
 }

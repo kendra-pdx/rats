@@ -1,4 +1,4 @@
-mod option;
-mod vec;
-mod result;
-mod string;
+pub mod option;
+pub mod vec;
+pub mod result;
+pub mod string;
