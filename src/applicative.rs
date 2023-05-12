@@ -8,7 +8,6 @@ pub trait Applicative: Pure {
     fn ap<B, C>(&self, b: &Self::To<B>) -> Self::To<C>
     where
         Self::Of: Fn(&B) -> C,
-        Self: Sized,
     {
         self.lift_a2(b, |g, x| g(&x))
     }

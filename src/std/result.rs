@@ -38,9 +38,9 @@ impl<A, E: Clone> Applicative for Result<A, E> {
 }
 
 impl<A, E: Clone> Monad for Result<A, E> {
-    fn bind<B, F>(&self, f: F) -> Self::To<B>
+    fn bind<B, F>(self, f: F) -> Self::To<B>
     where
-        F: Fn(&Self::Of) -> Self::To<B>,
+        F: Fn(Self::Of) -> Self::To<B>,
     {
         match self {
             Ok(a) => f(a),
@@ -88,7 +88,7 @@ mod tests {
     fn bind() {
         let err: Result<i32, TestErr> = Err(TestErr::Failure());
         let init: Result<i32, TestErr> = Ok(1);
-        assert_eq!(Ok(2), init.bind(|&x| Ok(x + 1)));
-        assert_eq!(err, err.bind(|_| panic!("should not be called")))
+        assert_eq!(Ok(2), init.bind(|x| Ok(x + 1)));
+        assert_eq!(err, err.clone().bind(|_| panic!("should not be called")))
     }
 }

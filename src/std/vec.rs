@@ -41,9 +41,9 @@ impl<A> Applicative for Vec<A> {
 }
 
 impl<A> Monad for Vec<A> {
-    fn bind<B, F>(&self, f: F) -> Self::To<B>
+    fn bind<B, F>(self, f: F) -> Self::To<B>
     where
-        F: Fn(&Self::Of) -> Self::To<B>,
+        F: Fn(Self::Of) -> Self::To<B>,
     {
         self.into_iter().map(f).flatten().collect()
     }
@@ -81,7 +81,7 @@ mod tests {
 
     #[test]
     fn bind() {
-        let plus = |x: &i32| vec![x + 1, x + 2];
+        let plus = |x: i32| vec![x + 1, x + 2];
         let xs = vec![1, 2];
         let r = vec![2, 3, 3, 4];
         assert_eq!(r, xs.bind(plus));
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn bind_empty() {
-        let empty = |_: &i32| vec![];
+        let empty = |_: i32| vec![];
         let xs = vec![1, 2];
         let r: Vec<i32> = vec![];
         assert_eq!(r, xs.bind(empty));

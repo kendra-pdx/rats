@@ -29,11 +29,11 @@ impl<A> Applicative for Option<A> {
 }
 
 impl<A> Monad for Option<A> {
-    fn bind<B, F>(&self, f: F) -> Self::To<B>
+    fn bind<B, F>(self, f: F) -> Self::To<B>
     where
-        F: Fn(&Self::Of) -> Self::To<B>,
+        F: Fn(Self::Of) -> Self::To<B>,
     {
-        self.as_ref().and_then(|a| f(&a))
+        self.and_then(|a| f(a))
     }
 }
 
