@@ -2,5 +2,4 @@ use crate::semigroup::Semigroup;
 
 pub trait Monoid {}
 
-impl<T: Default + Semigroup> Monoid for T {
-}
+impl<T: Default + Semigroup> Monoid for T {}

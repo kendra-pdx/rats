@@ -51,7 +51,7 @@ impl<A, E: Clone> Monad for Result<A, E> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{functor::Functor, pure::Pure, applicative::Applicative, monad::Monad};
+    use crate::{applicative::Applicative, functor::Functor, monad::Monad, pure::Pure};
 
     #[derive(Clone, PartialEq, Debug)]
     enum TestErr {

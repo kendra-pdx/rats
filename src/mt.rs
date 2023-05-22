@@ -10,7 +10,6 @@ pub fn join<MOuter, MInner, A>(outer: MOuter) -> MOuter::To<A>
 where
     MOuter: Monad<Of = MInner, To<A> = MInner>,
     MInner: Monad<Of = A, To<A> = MOuter::To<A>>,
-    
 {
     outer.bind::<A, _>(|inner| inner)
 }

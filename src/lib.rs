@@ -1,12 +1,12 @@
-mod hkt;
-mod functor;
-mod pure;
 mod applicative;
-mod semigroup;
-mod monoid;
-mod monad;
+mod functor;
+mod hkt;
 mod identity;
+mod monad;
+mod monoid;
 mod mt;
+mod pure;
+mod semigroup;
 
 mod std;
 mod validation;
