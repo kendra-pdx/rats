@@ -100,4 +100,29 @@ mod tests {
         let err2: Result<i32, Vec<Errors>> = Err(vec![Errors::TestError2()]);
         assert_eq!(Validation::Err(vec![Errors::TestError2()]), Validation::from(err2));
     }
+
+    #[test]
+    fn validate() {
+        type NumberValidation = Validation<i32, Vec<String>>;
+        fn is_non_negative(i: i32) -> NumberValidation {
+            if i >= 0 {
+                Validation::Ok(i)
+            } else {
+                Validation::Err(vec![String::from("i must be non negative")])
+            }
+        }
+
+        fn is_even(i: i32) -> NumberValidation {
+            if i % 2 == 0 {
+                Validation::Ok(i)
+            } else {
+                Validation::Err(vec![String::from("i must be even")])
+            }
+        }
+
+        let i = -1;
+        let v_non_negative = is_non_negative(i);
+        let v_even = is_even(i);
+        let r = v_even.lift_a2(&v_non_negative, |a, b| { (a.clone(), b.clone()) });
+    }
 }
